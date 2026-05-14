@@ -3,6 +3,7 @@ import "express-async-errors";
 import express from "express";
 import cors from "cors";
 import { authRouter } from "./modules/auth/auth.routes";
+import { rotinasRouter } from "./modules/rotinas/rotinas.routes";
 import { errorHandler } from "./middlewares/errorHandler";
 
 export function criarApp() {
@@ -16,6 +17,7 @@ export function criarApp() {
   });
 
   app.use("/api/auth", authRouter);
+  app.use("/api/rotinas", rotinasRouter);
 
   app.use((_req, res) => {
     res.status(404).json({ erro: "NOT_FOUND", mensagem: "Rota não encontrada" });
