@@ -4,6 +4,10 @@ import express from "express";
 import cors from "cors";
 import { authRouter } from "./modules/auth/auth.routes";
 import { rotinasRouter } from "./modules/rotinas/rotinas.routes";
+import {
+  tarefasRouter,
+  tarefasAninhadasRouter,
+} from "./modules/tarefas/tarefas.routes";
 import { errorHandler } from "./middlewares/errorHandler";
 
 export function criarApp() {
@@ -17,7 +21,9 @@ export function criarApp() {
   });
 
   app.use("/api/auth", authRouter);
+  app.use("/api/rotinas/:rotinaId/tarefas", tarefasAninhadasRouter);
   app.use("/api/rotinas", rotinasRouter);
+  app.use("/api/tarefas", tarefasRouter);
 
   app.use((_req, res) => {
     res.status(404).json({ erro: "NOT_FOUND", mensagem: "Rota não encontrada" });
