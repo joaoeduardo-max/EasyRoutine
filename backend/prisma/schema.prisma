@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senhaHash String   @map("senha_hash")
+  criadoEm  DateTime @default(now()) @map("criado_em")
+  rotinas   Rotina[]
+
+  @@map("usuarios")
+}
+
+model Rotina {
+  id           String   @id @default(uuid())
+  usuarioId    String   @map("usuario_id")
+  titulo       String
+  descricao    String?  @db.Text
+  cor          String
+  icone        String
+  ativa        Boolean  @default(true)
+  criadaEm     DateTime @default(now()) @map("criada_em")
+  atualizadaEm DateTime @updatedAt @map("atualizada_em")
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tarefas      Tarefa[]
+
+  @@index([usuarioId])
+  @@map("rotinas")
+}
+
+model Tarefa {
+  id             String  @id @default(uuid())
+  rotinaId       String  @map("rotina_id")
+  titulo         String
+  ordem          Int
+  duracaoMinutos Int?    @map("duracao_minutos")
+  icone          String
+  concluida      Boolean @default(false)
+  rotina         Rotina  @relation(fields: [rotinaId], references: [id], onDelete: Cascade)
+
+  @@index([rotinaId, ordem])
+  @@map("tarefas")
+}
