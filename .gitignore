@@ -1,0 +1,24 @@
+# Node
+node_modules/
+dist/
+*.log
+.env
+.env.local
+
+# Flutter / Dart
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+
+# Android
+.gradle/
+local.properties
+*.iml
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+.DS_Store
