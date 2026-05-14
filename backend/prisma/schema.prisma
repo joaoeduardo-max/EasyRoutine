@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Periodo {
+  MANHA
+  TARDE
+  NOITE
+}
+
 model Usuario {
   id        String   @id @default(uuid())
   nome      String
@@ -25,6 +31,7 @@ model Rotina {
   descricao    String?  @db.Text
   cor          String
   icone        String
+  periodo      Periodo?
   ativa        Boolean  @default(true)
   criadaEm     DateTime @default(now()) @map("criada_em")
   atualizadaEm DateTime @updatedAt @map("atualizada_em")
@@ -41,6 +48,8 @@ model Tarefa {
   titulo         String
   ordem          Int
   duracaoMinutos Int?    @map("duracao_minutos")
+  horario        String? @db.VarChar(5)
+  cor            String?
   icone          String
   concluida      Boolean @default(false)
   rotina         Rotina  @relation(fields: [rotinaId], references: [id], onDelete: Cascade)

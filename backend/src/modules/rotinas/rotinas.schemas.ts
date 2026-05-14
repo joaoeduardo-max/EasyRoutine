@@ -4,6 +4,10 @@ export const corHexSchema = z
   .string()
   .regex(/^#[0-9A-Fa-f]{6}$/, "Cor deve ser hex no formato #RRGGBB");
 
+export const periodoSchema = z.enum(["MANHA", "TARDE", "NOITE"], {
+  errorMap: () => ({ message: "Período deve ser MANHA, TARDE ou NOITE" }),
+});
+
 export const criarRotinaSchema = z.object({
   titulo: z.string().trim().min(1, "Título é obrigatório").max(80, "Título muito longo"),
   descricao: z
@@ -15,6 +19,7 @@ export const criarRotinaSchema = z.object({
     .transform((v) => (v === "" ? null : v ?? null)),
   cor: corHexSchema,
   icone: z.string().trim().min(1, "Ícone é obrigatório").max(10, "Ícone muito longo"),
+  periodo: periodoSchema.optional().nullable(),
 });
 
 export const atualizarRotinaSchema = z
@@ -24,6 +29,7 @@ export const atualizarRotinaSchema = z
     descricao: z.string().trim().max(500).nullable().optional(),
     cor: corHexSchema.optional(),
     icone: z.string().trim().min(1).max(10).optional(),
+    periodo: periodoSchema.nullable().optional(),
   })
   .refine((d) => Object.values(d).some((v) => v !== undefined), {
     message: "Informe pelo menos um campo para atualizar",

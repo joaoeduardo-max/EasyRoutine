@@ -76,10 +76,21 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
     return confirmou == true;
   }
 
+  Color _corTarefa(Tarefa t) {
+    final hex = t.cor;
+    if (hex == null || hex.isEmpty) return widget.rotina.corFlutter;
+    final puro = hex.replaceFirst('#', '');
+    try {
+      return Color(int.parse('FF$puro', radix: 16));
+    } catch (_) {
+      return widget.rotina.corFlutter;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final cor = widget.rotina.corFlutter;
     final t = _tarefaAtual;
+    final cor = _corTarefa(t);
     final progresso = '${_indice + 1} de $_total';
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -163,8 +174,35 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                         style: AppTextStyles.displayTarefa
                             .copyWith(color: Colors.white),
                       ),
+                      if (t.horario != null) ...[
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 18, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.22),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.access_time_rounded,
+                                  color: Colors.white, size: 28),
+                              const SizedBox(width: 8),
+                              Text(
+                                t.horario!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       if (t.duracaoMinutos != null) ...[
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         Text(
                           '${t.duracaoMinutos} min',
                           style: const TextStyle(

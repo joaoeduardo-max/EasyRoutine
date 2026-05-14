@@ -4,6 +4,8 @@ class Tarefa {
   final String titulo;
   final int ordem;
   final int? duracaoMinutos;
+  final String? horario;
+  final String? cor;
   final String icone;
   final bool concluida;
 
@@ -13,6 +15,8 @@ class Tarefa {
     required this.titulo,
     required this.ordem,
     required this.duracaoMinutos,
+    required this.horario,
+    required this.cor,
     required this.icone,
     required this.concluida,
   });
@@ -24,6 +28,8 @@ class Tarefa {
       titulo: json['titulo'] as String,
       ordem: json['ordem'] as int,
       duracaoMinutos: json['duracaoMinutos'] as int?,
+      horario: json['horario'] as String?,
+      cor: json['cor'] as String?,
       icone: json['icone'] as String,
       concluida: json['concluida'] as bool,
     );

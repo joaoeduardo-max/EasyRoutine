@@ -29,12 +29,14 @@ class RotinasProvider extends ChangeNotifier {
     String? descricao,
     required String cor,
     required String icone,
+    Periodo? periodo,
   }) async {
     final nova = await _service.criar(
       titulo: titulo,
       descricao: descricao,
       cor: cor,
       icone: icone,
+      periodo: periodo,
     );
     _rotinas = [nova, ..._rotinas];
     notifyListeners();
@@ -47,6 +49,7 @@ class RotinasProvider extends ChangeNotifier {
     required String? descricao,
     required String cor,
     required String icone,
+    required Periodo? periodo,
   }) async {
     final atualizada = await _service.atualizar(
       id,
@@ -54,6 +57,7 @@ class RotinasProvider extends ChangeNotifier {
       descricao: descricao,
       cor: cor,
       icone: icone,
+      periodo: periodo,
     );
     final idx = _rotinas.indexWhere((r) => r.id == id);
     if (idx >= 0) {
@@ -77,7 +81,8 @@ class RotinasProvider extends ChangeNotifier {
         atual.titulo != nova.titulo ||
         atual.descricao != nova.descricao ||
         atual.cor != nova.cor ||
-        atual.icone != nova.icone;
+        atual.icone != nova.icone ||
+        atual.periodo != nova.periodo;
     if (!mudou) return;
     _rotinas = List.of(_rotinas)..[idx] = nova.semTarefas();
     notifyListeners();

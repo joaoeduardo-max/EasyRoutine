@@ -1,3 +1,4 @@
+import { Periodo } from "@prisma/client";
 import { prisma } from "../../config/prisma";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { mapearTarefa } from "../tarefas/tarefas.service";
@@ -10,6 +11,7 @@ export interface RotinaPublica {
   descricao: string | null;
   cor: string;
   icone: string;
+  periodo: Periodo | null;
   ativa: boolean;
   criadaEm: Date;
   atualizadaEm: Date;
@@ -22,6 +24,7 @@ function mapear(r: {
   descricao: string | null;
   cor: string;
   icone: string;
+  periodo: Periodo | null;
   ativa: boolean;
   criadaEm: Date;
   atualizadaEm: Date;
@@ -32,6 +35,7 @@ function mapear(r: {
     descricao: r.descricao,
     cor: r.cor,
     icone: r.icone,
+    periodo: r.periodo,
     ativa: r.ativa,
     criadaEm: r.criadaEm,
     atualizadaEm: r.atualizadaEm,
@@ -59,6 +63,7 @@ export async function criar(
       descricao: dados.descricao ?? null,
       cor: dados.cor,
       icone: dados.icone,
+      periodo: dados.periodo ?? null,
     },
   });
 
@@ -134,11 +139,13 @@ export async function atualizar(
     descricao?: string | null;
     cor?: string;
     icone?: string;
+    periodo?: Periodo | null;
   } = {};
   if (dados.titulo !== undefined) data.titulo = dados.titulo;
   if (dados.descricao !== undefined) data.descricao = dados.descricao ?? null;
   if (dados.cor !== undefined) data.cor = dados.cor;
   if (dados.icone !== undefined) data.icone = dados.icone;
+  if (dados.periodo !== undefined) data.periodo = dados.periodo ?? null;
 
   const atualizada = await prisma.rotina.update({
     where: { id },

@@ -4,7 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/feedback.dart';
 import '../../../shared/widgets/limite_leitura.dart';
 import '../../auth/auth_provider.dart';
-import '../../auth/screens/login_screen.dart';
+import '../../perfil/screens/perfil_screen.dart';
 import '../models/rotina.dart';
 import '../rotinas_provider.dart';
 import '../widgets/rotina_card.dart';
@@ -36,39 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
     mostrarSnack(context, e.toString());
   }
 
-  Future<void> _confirmarSair() async {
-    final confirmou = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Sair da conta?'),
-        content: const Text(
-          'Você precisará entrar novamente da próxima vez.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Sair'),
-          ),
-        ],
-      ),
-    );
-    if (confirmou != true || !mounted) return;
-    await _sair();
-  }
-
-  Future<void> _sair() async {
-    final auth = context.read<AuthProvider>();
-    final rotinas = context.read<RotinasProvider>();
-    await auth.sair();
-    rotinas.limpar();
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
-      (_) => false,
+  void _abrirPerfil() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const PerfilScreen()),
     );
   }
 
@@ -118,13 +88,13 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _Header(
                 nome: usuario?.nome,
-                aoSair: _confirmarSair,
+                aoAbrirPerfil: _abrirPerfil,
               ),
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () =>
                       rotinasProvider.carregar().catchError(_mostrarErro),
-                  child: _construirCorpo(rotinasProvider, usuario?.nome),
+                  child: _construirCorpo(rotinasProvider),
                 ),
               ),
             ],
@@ -142,30 +112,53 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _construirCorpo(RotinasProvider provider, String? nome) {
+  Widget _construirCorpo(RotinasProvider provider) {
     if (provider.carregando && !provider.jaCarregou) {
       return const Center(child: CircularProgressIndicator());
     }
     if (provider.vazio) {
       return _estadoVazio();
     }
-    return ListView.separated(
+    final secoes = _agrupar(provider.rotinas);
+    return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-      itemCount: provider.rotinas.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 16),
+      itemCount: secoes.length,
       itemBuilder: (_, i) {
-        final r = provider.rotinas[i];
-        return RotinaCard(
-          rotina: r,
-          aoTocar: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => DetalhesRotinaScreen(rotinaId: r.id),
+        final secao = secoes[i];
+        return Padding(
+          padding: EdgeInsets.only(top: i == 0 ? 0 : 24),
+          child: _SecaoRotinas(
+            titulo: secao.titulo,
+            emoji: secao.emoji,
+            rotinas: secao.rotinas,
+            aoTocar: (r) => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => DetalhesRotinaScreen(rotinaId: r.id),
+              ),
             ),
+            aoSegurar: _confirmarExclusao,
           ),
-          aoSegurar: () => _confirmarExclusao(r),
         );
       },
     );
+  }
+
+  List<_Secao> _agrupar(List<Rotina> rotinas) {
+    final mapa = <Periodo?, List<Rotina>>{};
+    for (final r in rotinas) {
+      mapa.putIfAbsent(r.periodo, () => []).add(r);
+    }
+    final ordem = <Periodo?>[Periodo.manha, Periodo.tarde, Periodo.noite, null];
+    return [
+      for (final p in ordem)
+        if ((mapa[p] ?? const []).isNotEmpty)
+          _Secao(
+            periodo: p,
+            titulo: p?.rotulo ?? 'Sem período definido',
+            emoji: p?.emoji ?? '⏰',
+            rotinas: mapa[p]!,
+          ),
+    ];
   }
 
   Widget _estadoVazio() {
@@ -193,11 +186,75 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+class _Secao {
+  final Periodo? periodo;
+  final String titulo;
+  final String emoji;
+  final List<Rotina> rotinas;
+
+  _Secao({
+    required this.periodo,
+    required this.titulo,
+    required this.emoji,
+    required this.rotinas,
+  });
+}
+
+class _SecaoRotinas extends StatelessWidget {
+  final String titulo;
+  final String emoji;
+  final List<Rotina> rotinas;
+  final void Function(Rotina) aoTocar;
+  final void Function(Rotina) aoSegurar;
+
+  const _SecaoRotinas({
+    required this.titulo,
+    required this.emoji,
+    required this.rotinas,
+    required this.aoTocar,
+    required this.aoSegurar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
+          child: Row(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 24)),
+              const SizedBox(width: 8),
+              Text(
+                titulo,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textoForte,
+                ),
+              ),
+            ],
+          ),
+        ),
+        for (int i = 0; i < rotinas.length; i++) ...[
+          if (i > 0) const SizedBox(height: 16),
+          RotinaCard(
+            rotina: rotinas[i],
+            aoTocar: () => aoTocar(rotinas[i]),
+            aoSegurar: () => aoSegurar(rotinas[i]),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 class _Header extends StatelessWidget {
   final String? nome;
-  final VoidCallback aoSair;
+  final VoidCallback aoAbrirPerfil;
 
-  const _Header({required this.nome, required this.aoSair});
+  const _Header({required this.nome, required this.aoAbrirPerfil});
 
   @override
   Widget build(BuildContext context) {
@@ -234,10 +291,10 @@ class _Header extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            iconSize: 26,
-            tooltip: 'Sair',
-            onPressed: aoSair,
+            icon: const Icon(Icons.person_outline),
+            iconSize: 28,
+            tooltip: 'Perfil',
+            onPressed: aoAbrirPerfil,
           ),
         ],
       ),

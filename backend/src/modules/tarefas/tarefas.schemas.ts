@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+export const corHexSchema = z
+  .string()
+  .regex(/^#[0-9A-Fa-f]{6}$/, "Cor deve ser hex no formato #RRGGBB");
+
+export const horarioSchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Horário deve estar no formato HH:MM (24h)");
+
 export const criarTarefaSchema = z.object({
   titulo: z.string().trim().min(1, "Título é obrigatório").max(80, "Título muito longo"),
   icone: z.string().trim().min(1, "Ícone é obrigatório").max(10, "Ícone muito longo"),
@@ -10,6 +18,8 @@ export const criarTarefaSchema = z.object({
     .max(1440, "Duração não pode passar de 24h")
     .optional()
     .nullable(),
+  horario: horarioSchema.optional().nullable(),
+  cor: corHexSchema.optional().nullable(),
 });
 
 export const atualizarTarefaSchema = z
@@ -23,6 +33,8 @@ export const atualizarTarefaSchema = z
       .max(1440)
       .optional()
       .nullable(),
+    horario: horarioSchema.nullable().optional(),
+    cor: corHexSchema.nullable().optional(),
     concluida: z.boolean().optional(),
   })
   .refine((d) => Object.values(d).some((v) => v !== undefined), {

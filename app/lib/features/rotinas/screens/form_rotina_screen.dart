@@ -29,6 +29,7 @@ class _FormRotinaScreenState extends State<FormRotinaScreen> {
 
   Color _corSelecionada = AppColors.paletaRotinas.first;
   String _iconeSelecionado = _icones.first;
+  Periodo? _periodoSelecionado;
   bool _enviando = false;
 
   bool get _editando => widget.rotina != null;
@@ -45,6 +46,7 @@ class _FormRotinaScreenState extends State<FormRotinaScreen> {
         orElse: () => AppColors.paletaRotinas.first,
       );
       _iconeSelecionado = _icones.contains(r.icone) ? r.icone : _icones.first;
+      _periodoSelecionado = r.periodo;
     }
 
     _tituloController.addListener(_onChange);
@@ -85,6 +87,7 @@ class _FormRotinaScreenState extends State<FormRotinaScreen> {
           descricao: descricao,
           cor: cor,
           icone: _iconeSelecionado,
+          periodo: _periodoSelecionado,
         );
       } else {
         await provider.atualizar(
@@ -93,6 +96,7 @@ class _FormRotinaScreenState extends State<FormRotinaScreen> {
           descricao: descricao,
           cor: cor,
           icone: _iconeSelecionado,
+          periodo: _periodoSelecionado,
         );
       }
       if (!mounted) return;
@@ -128,6 +132,7 @@ class _FormRotinaScreenState extends State<FormRotinaScreen> {
                   descricao: _descricaoController.text.trim(),
                   cor: _corSelecionada,
                   icone: _iconeSelecionado,
+                  periodo: _periodoSelecionado,
                 ),
                 const SizedBox(height: 28),
                 TextFormField(
@@ -157,6 +162,21 @@ class _FormRotinaScreenState extends State<FormRotinaScreen> {
                     }
                     return null;
                   },
+                ),
+                const SizedBox(height: 28),
+                Text('Período', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(
+                  'Em que parte do dia essa rotina acontece?',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textoFraco,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _SeletorPeriodo(
+                  selecionado: _periodoSelecionado,
+                  aoSelecionar: (p) => setState(() => _periodoSelecionado = p),
                 ),
                 const SizedBox(height: 28),
                 Text('Cor', style: Theme.of(context).textTheme.titleMedium),
@@ -195,12 +215,14 @@ class _PreviewRotina extends StatelessWidget {
   final String descricao;
   final Color cor;
   final String icone;
+  final Periodo? periodo;
 
   const _PreviewRotina({
     required this.titulo,
     required this.descricao,
     required this.cor,
     required this.icone,
+    required this.periodo,
   });
 
   @override
@@ -257,6 +279,25 @@ class _PreviewRotina extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
+                      if (periodo != null) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.22),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${periodo!.emoji} ${periodo!.rotulo}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -265,6 +306,64 @@ class _PreviewRotina extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SeletorPeriodo extends StatelessWidget {
+  final Periodo? selecionado;
+  final ValueChanged<Periodo?> aoSelecionar;
+
+  const _SeletorPeriodo({
+    required this.selecionado,
+    required this.aoSelecionar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final opcoes = <(Periodo?, String, String)>[
+      (null, '⏰', 'Sem período'),
+      (Periodo.manha, Periodo.manha.emoji, Periodo.manha.rotulo),
+      (Periodo.tarde, Periodo.tarde.emoji, Periodo.tarde.rotulo),
+      (Periodo.noite, Periodo.noite.emoji, Periodo.noite.rotulo),
+    ];
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: opcoes.map((item) {
+        final (valor, emoji, rotulo) = item;
+        final escolhido = valor == selecionado;
+        return InkWell(
+          onTap: () => aoSelecionar(valor),
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: escolhido ? AppColors.primaria : AppColors.superficie,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: escolhido ? AppColors.primaria : const Color(0xFFCCCCCC),
+                width: escolhido ? 3 : 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(emoji, style: const TextStyle(fontSize: 22)),
+                const SizedBox(width: 8),
+                Text(
+                  rotulo,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: escolhido ? Colors.white : AppColors.textoForte,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

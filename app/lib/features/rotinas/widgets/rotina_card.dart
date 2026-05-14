@@ -28,6 +28,7 @@ class RotinaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final descricao = rotina.descricao;
+    final periodo = rotina.periodo;
     return Material(
       color: rotina.corFlutter,
       borderRadius: BorderRadius.circular(20),
@@ -82,7 +83,15 @@ class RotinaCard extends StatelessWidget {
                       ),
                     ],
                     const SizedBox(height: 10),
-                    _SeloContador(texto: _textoContador()),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      children: [
+                        _SeloContador(texto: _textoContador()),
+                        if (periodo != null)
+                          _SeloPeriodo(periodo: periodo),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -113,6 +122,34 @@ class _SeloContador extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             texto,
+            style: AppTextStyles.selo
+                .copyWith(color: Colors.white, fontSize: 14),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SeloPeriodo extends StatelessWidget {
+  final Periodo periodo;
+  const _SeloPeriodo({required this.periodo});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(periodo.emoji, style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 6),
+          Text(
+            periodo.rotulo,
             style: AppTextStyles.selo
                 .copyWith(color: Colors.white, fontSize: 14),
           ),

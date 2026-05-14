@@ -8,6 +8,8 @@ export interface TarefaPublica {
   titulo: string;
   ordem: number;
   duracaoMinutos: number | null;
+  horario: string | null;
+  cor: string | null;
   icone: string;
   concluida: boolean;
 }
@@ -18,6 +20,8 @@ export function mapearTarefa(t: {
   titulo: string;
   ordem: number;
   duracaoMinutos: number | null;
+  horario: string | null;
+  cor: string | null;
   icone: string;
   concluida: boolean;
 }): TarefaPublica {
@@ -27,6 +31,8 @@ export function mapearTarefa(t: {
     titulo: t.titulo,
     ordem: t.ordem,
     duracaoMinutos: t.duracaoMinutos,
+    horario: t.horario,
+    cor: t.cor,
     icone: t.icone,
     concluida: t.concluida,
   };
@@ -56,6 +62,8 @@ export async function adicionar(
       titulo: dados.titulo,
       icone: dados.icone,
       duracaoMinutos: dados.duracaoMinutos ?? null,
+      horario: dados.horario ?? null,
+      cor: dados.cor ?? null,
       ordem: proximaOrdem,
     },
   });
@@ -78,11 +86,15 @@ export async function atualizar(
     titulo?: string;
     icone?: string;
     duracaoMinutos?: number | null;
+    horario?: string | null;
+    cor?: string | null;
     concluida?: boolean;
   } = {};
   if (dados.titulo !== undefined) data.titulo = dados.titulo;
   if (dados.icone !== undefined) data.icone = dados.icone;
   if (dados.duracaoMinutos !== undefined) data.duracaoMinutos = dados.duracaoMinutos ?? null;
+  if (dados.horario !== undefined) data.horario = dados.horario ?? null;
+  if (dados.cor !== undefined) data.cor = dados.cor ?? null;
   if (dados.concluida !== undefined) data.concluida = dados.concluida;
 
   const atualizada = await prisma.tarefa.update({

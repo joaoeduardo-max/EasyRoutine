@@ -62,7 +62,11 @@ class _DetalhesRotinaScreenState extends State<DetalhesRotinaScreen> {
   Future<void> _abrirForm({Tarefa? tarefa}) async {
     final resultado = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => FormTarefaScreen(rotinaId: widget.rotinaId, tarefa: tarefa),
+        builder: (_) => FormTarefaScreen(
+          rotinaId: widget.rotinaId,
+          tarefa: tarefa,
+          corRotinaHex: _rotina?.cor,
+        ),
       ),
     );
     if (resultado == true) {
@@ -246,6 +250,7 @@ class _DetalhesRotinaScreenState extends State<DetalhesRotinaScreen> {
               key: ValueKey(t.id),
               indice: i,
               tarefa: t,
+              corRotina: rotina.corFlutter,
               aoTocar: () => _abrirForm(tarefa: t),
             );
           },
@@ -440,17 +445,33 @@ class _EstadoVazioTarefas extends StatelessWidget {
 class _TarefaTile extends StatelessWidget {
   final int indice;
   final Tarefa tarefa;
+  final Color corRotina;
   final VoidCallback aoTocar;
 
   const _TarefaTile({
     super.key,
     required this.indice,
     required this.tarefa,
+    required this.corRotina,
     required this.aoTocar,
   });
 
+  Color _corTarefa() {
+    final hex = tarefa.cor;
+    if (hex == null || hex.isEmpty) return corRotina;
+    final puro = hex.replaceFirst('#', '');
+    try {
+      return Color(int.parse('FF$puro', radix: 16));
+    } catch (_) {
+      return corRotina;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final corAcento = _corTarefa();
+    final horario = tarefa.horario;
+    final duracao = tarefa.duracaoMinutos;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
@@ -461,9 +482,18 @@ class _TarefaTile extends StatelessWidget {
           onTap: aoTocar,
           borderRadius: BorderRadius.circular(14),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
+            padding: const EdgeInsets.fromLTRB(0, 14, 8, 14),
             child: Row(
               children: [
+                Container(
+                  width: 6,
+                  height: 48,
+                  margin: const EdgeInsets.only(right: 10),
+                  decoration: BoxDecoration(
+                    color: corAcento,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
                 Text(tarefa.icone, style: const TextStyle(fontSize: 32)),
                 const SizedBox(width: 16),
                 Expanded(
@@ -477,23 +507,51 @@ class _TarefaTile extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (tarefa.duracaoMinutos != null) ...[
+                      if (horario != null || duracao != null) ...[
                         const SizedBox(height: 4),
-                        Row(
+                        Wrap(
+                          spacing: 12,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            const Icon(
-                              Icons.schedule_rounded,
-                              size: 14,
-                              color: AppColors.textoFraco,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${tarefa.duracaoMinutos} min',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textoFraco,
+                            if (horario != null)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.access_time_rounded,
+                                    size: 14,
+                                    color: corAcento,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    horario,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: corAcento,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
+                            if (duracao != null)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.schedule_rounded,
+                                    size: 14,
+                                    color: AppColors.textoFraco,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '$duracao min',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.textoFraco,
+                                    ),
+                                  ),
+                                ],
+                              ),
                           ],
                         ),
                       ],
