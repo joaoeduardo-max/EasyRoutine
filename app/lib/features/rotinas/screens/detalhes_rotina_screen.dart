@@ -94,6 +94,36 @@ class _DetalhesRotinaScreenState extends State<DetalhesRotinaScreen> {
     );
   }
 
+  Future<void> _excluirTarefa(Tarefa t) async {
+    final confirmou = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Excluir tarefa?'),
+        content: Text('"${t.titulo}" será removida.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.erro),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+    if (confirmou != true || !mounted) return;
+    try {
+      await _service.excluirTarefa(t.id);
+      if (!mounted) return;
+      mostrarSnack(context, 'Tarefa removida');
+      _carregar();
+    } catch (e) {
+      _erro(e);
+    }
+  }
+
   Future<void> _excluirRotina() async {
     final r = _rotina;
     if (r == null) return;
@@ -187,7 +217,6 @@ class _DetalhesRotinaScreenState extends State<DetalhesRotinaScreen> {
               tarefas: _tarefas,
               aoVoltar: () => Navigator.of(context).maybePop(),
               aoEditar: _editarRotina,
-              aoExcluir: _excluirRotina,
             ),
             Expanded(
               child: Container(
@@ -214,9 +243,37 @@ class _DetalhesRotinaScreenState extends State<DetalhesRotinaScreen> {
         child: Container(
           color: AppColors.fundo,
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-          child: BotaoGrande(
-            texto: 'Executar rotina',
-            aoTocar: _tarefas.isEmpty ? null : _executar,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              BotaoGrande(
+                texto: 'Executar rotina',
+                aoTocar: _tarefas.isEmpty ? null : _executar,
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton.icon(
+                  onPressed: _excluirRotina,
+                  icon: const Icon(Icons.delete_outline, color: AppColors.erro),
+                  label: const Text(
+                    'Excluir rotina',
+                    style: TextStyle(
+                      color: AppColors.erro,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.erro, width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -254,6 +311,7 @@ class _DetalhesRotinaScreenState extends State<DetalhesRotinaScreen> {
               tarefa: t,
               corRotina: rotina.corFlutter,
               aoTocar: () => _abrirForm(tarefa: t),
+              aoExcluir: () => _excluirTarefa(t),
             );
           },
         ),
@@ -277,14 +335,12 @@ class _Header extends StatelessWidget {
   final List<Tarefa> tarefas;
   final VoidCallback aoVoltar;
   final VoidCallback aoEditar;
-  final VoidCallback aoExcluir;
 
   const _Header({
     required this.rotina,
     required this.tarefas,
     required this.aoVoltar,
     required this.aoEditar,
-    required this.aoExcluir,
   });
 
   String _textoTarefas() {
@@ -330,11 +386,6 @@ class _Header extends StatelessWidget {
                 icon: Icon(Icons.edit_outlined, color: corTexto, size: 26),
                 tooltip: 'Editar rotina',
                 onPressed: aoEditar,
-              ),
-              IconButton(
-                icon: Icon(Icons.delete_outline, color: corTexto, size: 28),
-                tooltip: 'Excluir rotina',
-                onPressed: aoExcluir,
               ),
             ],
           ),
@@ -468,6 +519,7 @@ class _TarefaTile extends StatelessWidget {
   final Tarefa tarefa;
   final Color corRotina;
   final VoidCallback aoTocar;
+  final VoidCallback aoExcluir;
 
   const _TarefaTile({
     super.key,
@@ -475,6 +527,7 @@ class _TarefaTile extends StatelessWidget {
     required this.tarefa,
     required this.corRotina,
     required this.aoTocar,
+    required this.aoExcluir,
   });
 
   Color _corTarefa() {
@@ -578,6 +631,15 @@ class _TarefaTile extends StatelessWidget {
                       ],
                     ],
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: AppColors.erro,
+                    size: 26,
+                  ),
+                  tooltip: 'Excluir tarefa',
+                  onPressed: aoExcluir,
                 ),
                 ReorderableDragStartListener(
                   index: indice,

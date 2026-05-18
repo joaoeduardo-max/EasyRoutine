@@ -44,35 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _confirmarExclusao(Rotina rotina) async {
-    final confirmou = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Excluir rotina?'),
-        content: Text('"${rotina.titulo}" será removida.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.erro),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
-    );
-    if (confirmou != true || !mounted) return;
-    try {
-      await context.read<RotinasProvider>().excluir(rotina.id);
-      if (!mounted) return;
-      mostrarSnack(context, 'Rotina excluída');
-    } catch (e) {
-      _mostrarErro(e);
-    }
-  }
-
   Future<void> _abrirCriar() async {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => const FormRotinaScreen()),
@@ -139,7 +110,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 builder: (_) => DetalhesRotinaScreen(rotinaId: r.id),
               ),
             ),
-            aoSegurar: _confirmarExclusao,
           ),
         );
       },
@@ -214,14 +184,12 @@ class _SecaoRotinas extends StatelessWidget {
   final String emoji;
   final List<Rotina> rotinas;
   final void Function(Rotina) aoTocar;
-  final void Function(Rotina) aoSegurar;
 
   const _SecaoRotinas({
     required this.titulo,
     required this.emoji,
     required this.rotinas,
     required this.aoTocar,
-    required this.aoSegurar,
   });
 
   @override
@@ -250,7 +218,6 @@ class _SecaoRotinas extends StatelessWidget {
           RotinaCard(
             rotina: rotinas[i],
             aoTocar: () => aoTocar(rotinas[i]),
-            aoSegurar: () => aoSegurar(rotinas[i]),
           ),
         ],
       ],

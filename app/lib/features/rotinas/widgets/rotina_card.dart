@@ -6,13 +6,11 @@ import '../models/rotina.dart';
 class RotinaCard extends StatelessWidget {
   final Rotina rotina;
   final VoidCallback? aoTocar;
-  final VoidCallback? aoSegurar;
 
   const RotinaCard({
     super.key,
     required this.rotina,
     this.aoTocar,
-    this.aoSegurar,
   });
 
   String _textoContador() {
@@ -49,7 +47,6 @@ class RotinaCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           onTap: aoTocar,
-          onLongPress: aoSegurar,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
