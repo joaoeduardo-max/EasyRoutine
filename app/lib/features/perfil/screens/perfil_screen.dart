@@ -42,6 +42,7 @@ class PerfilScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.erro),
             child: const Text('Sair'),
           ),
         ],
@@ -156,19 +157,24 @@ class _Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 48,
-          backgroundColor: AppColors.primaria,
+        Container(
+          width: 96,
+          height: 96,
+          decoration: BoxDecoration(
+            color: AppColors.coral,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          alignment: Alignment.center,
           child: Text(
             _iniciais(),
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.papel,
               fontSize: 36,
               fontWeight: FontWeight.w700,
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         Text(
           nome ?? 'Visitante',
           style: const TextStyle(
@@ -200,7 +206,7 @@ class _CartaoInfo extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.superficie,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.nevoa, width: 1.5),
       ),
       child: Row(
         children: [
@@ -208,10 +214,10 @@ class _CartaoInfo extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: AppColors.primaria.withValues(alpha: 0.12),
+              color: AppColors.coral.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icone, color: AppColors.primaria, size: 24),
+            child: Icon(icone, color: AppColors.coral, size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(

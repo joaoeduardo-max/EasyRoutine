@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -110,6 +111,7 @@ class _DetalhesRotinaScreenState extends State<DetalhesRotinaScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.erro),
             child: const Text('Excluir'),
           ),
         ],
@@ -221,7 +223,7 @@ class _DetalhesRotinaScreenState extends State<DetalhesRotinaScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _abrirForm(),
         backgroundColor: rotina.corFlutter,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.corDeContrasteSobre(rotina.corFlutter),
         icon: const Icon(Icons.add, size: 28),
         label: const Text(
           'Nova tarefa',
@@ -307,6 +309,9 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final descricao = rotina.descricao;
     final duracao = _duracaoTotal();
+    final cor = rotina.corFlutter;
+    final corTexto = AppColors.corDeContrasteSobre(cor);
+    final corSelo = AppColors.seloSobre(cor);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 20),
@@ -316,20 +321,18 @@ class _Header extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+                icon: Icon(Icons.arrow_back, color: corTexto, size: 28),
                 tooltip: 'Voltar',
                 onPressed: aoVoltar,
               ),
               const Spacer(),
               IconButton(
-                icon: const Icon(Icons.edit_outlined,
-                    color: Colors.white, size: 26),
+                icon: Icon(Icons.edit_outlined, color: corTexto, size: 26),
                 tooltip: 'Editar rotina',
                 onPressed: aoEditar,
               ),
               IconButton(
-                icon: const Icon(Icons.delete_outline,
-                    color: Colors.white, size: 28),
+                icon: Icon(Icons.delete_outline, color: corTexto, size: 28),
                 tooltip: 'Excluir rotina',
                 onPressed: aoExcluir,
               ),
@@ -347,15 +350,14 @@ class _Header extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   rotina.titulo,
-                  style: AppTextStyles.headerHero
-                      .copyWith(color: Colors.white),
+                  style: AppTextStyles.headerHero.copyWith(color: corTexto),
                 ),
                 if (descricao != null && descricao.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
                     descricao,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.92),
+                      color: corTexto.withValues(alpha: 0.9),
                       fontSize: 17,
                     ),
                   ),
@@ -368,11 +370,15 @@ class _Header extends StatelessWidget {
                     _Selo(
                       icone: Icons.checklist_rounded,
                       texto: _textoTarefas(),
+                      corBg: corSelo,
+                      corFg: corTexto,
                     ),
                     if (duracao != null)
                       _Selo(
                         icone: Icons.schedule_rounded,
                         texto: '~$duracao min',
+                        corBg: corSelo,
+                        corFg: corTexto,
                       ),
                   ],
                 ),
@@ -388,24 +394,31 @@ class _Header extends StatelessWidget {
 class _Selo extends StatelessWidget {
   final IconData icone;
   final String texto;
-  const _Selo({required this.icone, required this.texto});
+  final Color corBg;
+  final Color corFg;
+  const _Selo({
+    required this.icone,
+    required this.texto,
+    required this.corBg,
+    required this.corFg,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.22),
+        color: corBg,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icone, color: Colors.white, size: 18),
+          Icon(icone, color: corFg, size: 18),
           const SizedBox(width: 6),
           Text(
             texto,
-            style: AppTextStyles.selo.copyWith(color: Colors.white),
+            style: AppTextStyles.selo.copyWith(color: corFg),
           ),
         ],
       ),
@@ -424,8 +437,16 @@ class _EstadoVazioTarefas extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(32, 60, 32, 32),
       children: [
-        const Center(child: Text('✨', style: TextStyle(fontSize: 96))),
-        const SizedBox(height: 16),
+        Center(
+          child: Opacity(
+            opacity: 0.8,
+            child: SvgPicture.asset(
+              'assets/logos/symbol-color.svg',
+              width: 96,
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
         Text(
           'Nenhuma tarefa ainda',
           style: Theme.of(context).textTheme.titleLarge,

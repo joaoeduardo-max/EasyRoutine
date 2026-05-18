@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../rotinas/models/rotina.dart';
 import '../../rotinas/models/tarefa.dart';
@@ -35,7 +36,9 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
   }
 
   void _pronto() {
+    HapticFeedback.selectionClick();
     if (_indice + 1 >= _total) {
+      HapticFeedback.mediumImpact();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
           builder: (_) => ConclusaoScreen(
@@ -68,6 +71,7 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.erro),
             child: const Text('Sair'),
           ),
         ],
@@ -91,13 +95,16 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
   Widget build(BuildContext context) {
     final t = _tarefaAtual;
     final cor = _corTarefa(t);
+    final corTexto = AppColors.corDeContrasteSobre(cor);
+    final corSelo = AppColors.seloSobre(cor);
+    final escuro = cor.computeLuminance() <= 0.55;
     final progresso = '${_indice + 1} de $_total';
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: cor,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
+        statusBarIconBrightness: escuro ? Brightness.light : Brightness.dark,
+        statusBarBrightness: escuro ? Brightness.dark : Brightness.light,
       ),
       child: PopScope(
       canPop: false,
@@ -119,23 +126,24 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                   children: [
                     Text(
                       progresso,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: corTexto,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
+                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
                     const Spacer(),
 
                     if (_indice > 0)
                       IconButton(
-                        icon: const Icon(Icons.arrow_back_rounded,
-                            color: Colors.white, size: 28),
+                        icon: Icon(Icons.arrow_back_rounded,
+                            color: corTexto, size: 28),
                         tooltip: 'Tarefa anterior',
                         onPressed: _anterior,
                       ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white, size: 32),
+                      icon: Icon(Icons.close, color: corTexto, size: 32),
                       tooltip: 'Sair',
                       onPressed: () async {
                         if (await _confirmarSair() && context.mounted) {
@@ -154,8 +162,8 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                   child: LinearProgressIndicator(
                     value: (_indice + 1) / _total,
                     minHeight: 8,
-                    backgroundColor: Colors.white.withValues(alpha: 0.3),
-                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                    backgroundColor: corTexto.withValues(alpha: 0.22),
+                    valueColor: AlwaysStoppedAnimation<Color>(corTexto),
                   ),
                 ),
               ),
@@ -171,8 +179,7 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                       Text(
                         t.titulo,
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.displayTarefa
-                            .copyWith(color: Colors.white),
+                        style: AppTextStyles.displayTarefa.copyWith(color: corTexto),
                       ),
                       if (t.horario != null) ...[
                         const SizedBox(height: 20),
@@ -180,21 +187,22 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 18, vertical: 8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.22),
+                            color: corSelo,
                             borderRadius: BorderRadius.circular(14),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.access_time_rounded,
-                                  color: Colors.white, size: 28),
+                              Icon(Icons.access_time_rounded,
+                                  color: corTexto, size: 28),
                               const SizedBox(width: 8),
                               Text(
                                 t.horario!,
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: corTexto,
                                   fontSize: 30,
                                   fontWeight: FontWeight.w700,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
                                 ),
                               ),
                             ],
@@ -205,10 +213,11 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                         const SizedBox(height: 16),
                         Text(
                           '${t.duracaoMinutos} min',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: corTexto,
                             fontSize: 28,
                             fontWeight: FontWeight.w500,
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
                       ],
@@ -225,7 +234,7 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                   child: ElevatedButton(
                     onPressed: _pronto,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: corTexto,
                       foregroundColor: cor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -243,9 +252,9 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                   child: _proximaTarefa == null
                       ? Center(
                           child: Text(
-                            'Última tarefa!',
+                            'Última tarefa.',
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.85),
+                              color: corTexto.withValues(alpha: 0.85),
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
@@ -257,7 +266,7 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                             Text(
                               'Depois: ',
                               style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.85),
+                                color: corTexto.withValues(alpha: 0.85),
                                 fontSize: 16,
                               ),
                             ),
@@ -270,7 +279,7 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
                               child: Text(
                                 _proximaTarefa!.titulo,
                                 style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.95),
+                                  color: corTexto.withValues(alpha: 0.95),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),

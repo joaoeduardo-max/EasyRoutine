@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 class BotaoGrande extends StatelessWidget {
   final String texto;
@@ -22,7 +23,7 @@ class BotaoGrande extends StatelessWidget {
               width: 24,
               child: CircularProgressIndicator(
                 strokeWidth: 3,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.papel),
               ),
             )
           : Text(texto),

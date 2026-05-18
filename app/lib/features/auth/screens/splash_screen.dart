@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import '../../../shared/widgets/cabecalho_marca.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 import '../auth_provider.dart';
 import 'login_screen.dart';
 import '../../rotinas/screens/home_screen.dart';
@@ -33,18 +35,32 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CabecalhoMarca(),
-              SizedBox(height: 32),
-              SizedBox(
+              SvgPicture.asset(
+                'assets/logos/logo-vertical-color.svg',
+                width: 220,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Um passo de cada vez.',
+                style: AppTheme.frauncesItalic(
+                  fontSize: 18,
+                  color: AppColors.textoFraco,
+                ),
+              ),
+              const SizedBox(height: 56),
+              const SizedBox(
                 width: 28,
                 height: 28,
-                child: CircularProgressIndicator(strokeWidth: 3),
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.tinta),
+                ),
               ),
             ],
           ),

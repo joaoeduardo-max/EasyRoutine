@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/feedback.dart';
 import '../../../shared/widgets/limite_leitura.dart';
 import '../../auth/auth_provider.dart';
@@ -55,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.erro),
             child: const Text('Excluir'),
           ),
         ],
@@ -155,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _Secao(
             periodo: p,
             titulo: p?.rotulo ?? 'Sem período definido',
-            emoji: p?.emoji ?? '⏰',
+            emoji: p?.emoji ?? '〰️',
             rotinas: mapa[p]!,
           ),
     ];
@@ -164,12 +167,18 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _estadoVazio() {
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(32, 40, 32, 32),
+      padding: const EdgeInsets.fromLTRB(32, 56, 32, 32),
       children: [
-        const Center(
-          child: Text('📋', style: TextStyle(fontSize: 110)),
+        Center(
+          child: Opacity(
+            opacity: 0.85,
+            child: SvgPicture.asset(
+              'assets/logos/symbol-color.svg',
+              width: 120,
+            ),
+          ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 32),
         Text(
           'Você ainda não tem rotinas',
           style: Theme.of(context).textTheme.titleLarge,
@@ -224,14 +233,13 @@ class _SecaoRotinas extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
           child: Row(
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 24)),
-              const SizedBox(width: 8),
+              Text(emoji, style: const TextStyle(fontSize: 22)),
+              const SizedBox(width: 10),
               Text(
                 titulo,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textoForte,
+                style: AppTheme.frauncesRegular(
+                  fontSize: 22,
+                  color: AppColors.tinta,
                 ),
               ),
             ],
@@ -259,7 +267,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
+      padding: const EdgeInsets.fromLTRB(20, 16, 8, 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -269,22 +277,42 @@ class _Header extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  nome != null ? 'Olá, $nome!' : 'Olá!',
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textoForte,
-                    height: 1.1,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                const Text(
                   'Suas rotinas',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     color: AppColors.textoFraco,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                RichText(
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Olá, ',
+                        style: AppTheme.frauncesRegular(
+                          fontSize: 30,
+                          color: AppColors.tinta,
+                        ),
+                      ),
+                      TextSpan(
+                        text: nome ?? 'você',
+                        style: AppTheme.frauncesItalic(
+                          fontSize: 30,
+                          color: AppColors.coral,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '.',
+                        style: AppTheme.frauncesRegular(
+                          fontSize: 30,
+                          color: AppColors.tinta,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

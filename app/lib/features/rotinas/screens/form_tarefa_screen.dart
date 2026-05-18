@@ -126,6 +126,7 @@ class _FormTarefaScreenState extends State<FormTarefaScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.erro),
             child: const Text('Excluir'),
           ),
         ],
@@ -321,7 +322,7 @@ class _CampoHorario extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFCCCCCC)),
+          border: Border.all(color: AppColors.tinta, width: 1.5),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -394,9 +395,8 @@ class _SeletorCorTarefa extends StatelessWidget {
               color: corRotina ?? AppColors.fundo,
               shape: BoxShape.circle,
               border: Border.all(
-                color:
-                    padraoEscolhida ? AppColors.textoForte : const Color(0xFFCCCCCC),
-                width: padraoEscolhida ? 4 : 2,
+                color: padraoEscolhida ? AppColors.tinta : AppColors.nevoa,
+                width: padraoEscolhida ? 3 : 1.5,
               ),
             ),
             child: Icon(
@@ -460,8 +460,8 @@ class _SeletorIcone extends StatelessWidget {
               color: AppColors.superficie,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: escolhido ? AppColors.primaria : const Color(0xFFCCCCCC),
-                width: escolhido ? 3 : 1,
+                color: escolhido ? AppColors.tinta : AppColors.nevoa,
+                width: escolhido ? 2.5 : 1.5,
               ),
             ),
             alignment: Alignment.center,

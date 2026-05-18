@@ -342,8 +342,8 @@ class _SeletorPeriodo extends StatelessWidget {
               color: escolhido ? AppColors.primaria : AppColors.superficie,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: escolhido ? AppColors.primaria : const Color(0xFFCCCCCC),
-                width: escolhido ? 3 : 1,
+                color: escolhido ? AppColors.tinta : AppColors.nevoa,
+                width: escolhido ? 2.5 : 1.5,
               ),
             ),
             child: Row(
@@ -437,8 +437,8 @@ class _SeletorIcone extends StatelessWidget {
               color: AppColors.superficie,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: escolhido ? AppColors.primaria : const Color(0xFFCCCCCC),
-                width: escolhido ? 3 : 1,
+                color: escolhido ? AppColors.tinta : AppColors.nevoa,
+                width: escolhido ? 2.5 : 1.5,
               ),
             ),
             alignment: Alignment.center,

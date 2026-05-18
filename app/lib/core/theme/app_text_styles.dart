@@ -5,19 +5,19 @@ class AppTextStyles {
 
   static const TextStyle displayTarefa = TextStyle(
     fontSize: 44,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     height: 1.1,
   );
 
   static const TextStyle headerHero = TextStyle(
     fontSize: 32,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     height: 1.1,
   );
 
   static const TextStyle displayConclusao = TextStyle(
     fontSize: 36,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     height: 1.15,
   );
 
@@ -34,7 +34,7 @@ class AppTextStyles {
 
   static const TextStyle botaoExecutar = TextStyle(
     fontSize: 32,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
   );
 
   static const TextStyle tituloTarefa = TextStyle(

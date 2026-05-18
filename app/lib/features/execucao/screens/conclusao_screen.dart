@@ -24,12 +24,14 @@ class ConclusaoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final corTexto = AppColors.corDeContrasteSobre(AppColors.sucesso);
+    final escuro = AppColors.sucesso.computeLuminance() <= 0.55;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
+      value: SystemUiOverlayStyle(
         statusBarColor: AppColors.sucesso,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
+        statusBarIconBrightness: escuro ? Brightness.light : Brightness.dark,
+        statusBarBrightness: escuro ? Brightness.dark : Brightness.light,
       ),
       child: PopScope(
       canPop: false,
@@ -48,16 +50,15 @@ class ConclusaoScreen extends StatelessWidget {
                 const Text('🎉', style: TextStyle(fontSize: 120)),
                 const SizedBox(height: 24),
                 Text(
-                  'Você concluiu sua rotina!',
-                  style: AppTextStyles.displayConclusao
-                      .copyWith(color: Colors.white),
+                  'Você concluiu sua rotina.',
+                  style: AppTextStyles.displayConclusao.copyWith(color: corTexto),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   tituloRotina,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: corTexto,
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                   ),
@@ -68,6 +69,7 @@ class ConclusaoScreen extends StatelessWidget {
                   quantidadeTarefas: quantidadeTarefas,
                   textoQuantidade: _textoTarefas(),
                   duracaoTotalMinutos: duracaoTotalMinutos,
+                  corFg: corTexto,
                 ),
                 const Spacer(),
                 Theme(
@@ -75,7 +77,7 @@ class ConclusaoScreen extends StatelessWidget {
                   data: Theme.of(context).copyWith(
                     elevatedButtonTheme: ElevatedButtonThemeData(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: corTexto,
                         foregroundColor: AppColors.sucesso,
                         minimumSize: const Size.fromHeight(72),
                         textStyle: const TextStyle(
@@ -90,7 +92,10 @@ class ConclusaoScreen extends StatelessWidget {
                   ),
                   child: BotaoGrande(
                     texto: 'Voltar',
-                    aoTocar: () => _voltarParaHome(context),
+                    aoTocar: () {
+                      HapticFeedback.lightImpact();
+                      _voltarParaHome(context);
+                    },
                   ),
                 ),
               ],
@@ -111,11 +116,13 @@ class _CartaoEstatisticas extends StatelessWidget {
   final int quantidadeTarefas;
   final String textoQuantidade;
   final int? duracaoTotalMinutos;
+  final Color corFg;
 
   const _CartaoEstatisticas({
     required this.quantidadeTarefas,
     required this.textoQuantidade,
     required this.duracaoTotalMinutos,
+    required this.corFg,
   });
 
   @override
@@ -124,7 +131,7 @@ class _CartaoEstatisticas extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.18),
+        color: corFg.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -133,16 +140,18 @@ class _CartaoEstatisticas extends StatelessWidget {
           _Estatistica(
             icone: Icons.checklist_rounded,
             texto: textoQuantidade,
+            corFg: corFg,
           ),
           if (temDuracao) ...[
             Container(
               height: 1,
               margin: const EdgeInsets.symmetric(vertical: 14),
-              color: Colors.white.withValues(alpha: 0.35),
+              color: corFg.withValues(alpha: 0.32),
             ),
             _Estatistica(
               icone: Icons.schedule_rounded,
               texto: '~$duracaoTotalMinutos minutos',
+              corFg: corFg,
             ),
           ],
         ],
@@ -154,22 +163,28 @@ class _CartaoEstatisticas extends StatelessWidget {
 class _Estatistica extends StatelessWidget {
   final IconData icone;
   final String texto;
-  const _Estatistica({required this.icone, required this.texto});
+  final Color corFg;
+  const _Estatistica({
+    required this.icone,
+    required this.texto,
+    required this.corFg,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icone, color: Colors.white, size: 22),
+        Icon(icone, color: corFg, size: 22),
         const SizedBox(width: 10),
         Flexible(
           child: Text(
             texto,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: corFg,
               fontSize: 17,
               fontWeight: FontWeight.w600,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
         ),

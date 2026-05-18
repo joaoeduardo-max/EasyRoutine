@@ -1,33 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_theme.dart';
 
 class CabecalhoMarca extends StatelessWidget {
-  const CabecalhoMarca({super.key});
+  const CabecalhoMarca({
+    super.key,
+    this.simboloTamanho = 72,
+    this.fonteTamanho = 36,
+    this.mostrarWordmark = true,
+  });
+
+  final double simboloTamanho;
+  final double fonteTamanho;
+  final bool mostrarWordmark;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: 96,
-          height: 96,
-          decoration: const BoxDecoration(
-            color: AppColors.primaria,
-            shape: BoxShape.circle,
-          ),
-          alignment: Alignment.center,
-          child: const Text('📋', style: TextStyle(fontSize: 54)),
+        SvgPicture.asset(
+          'assets/logos/symbol-color.svg',
+          width: simboloTamanho,
+          height: simboloTamanho,
         ),
-        const SizedBox(height: 16),
-        const Text(
-          'Rotina',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textoForte,
-            letterSpacing: -0.5,
+        if (mostrarWordmark) ...[
+          const SizedBox(height: 16),
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Easy',
+                  style: AppTheme.frauncesRegular(
+                    fontSize: fonteTamanho,
+                    color: AppColors.tinta,
+                  ),
+                ),
+                TextSpan(
+                  text: 'Routine',
+                  style: AppTheme.frauncesItalic(
+                    fontSize: fonteTamanho,
+                    color: AppColors.coral,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ],
     );
   }

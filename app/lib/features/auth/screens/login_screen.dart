@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/botao_grande.dart';
 import '../../../shared/widgets/cabecalho_marca.dart';
 import '../../../shared/widgets/campo_senha.dart';
@@ -63,22 +64,38 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
               children: [
                 const SizedBox(height: 16),
-                const CabecalhoMarca(),
-                const SizedBox(height: 36),
-                Text(
-                  'Que bom te ver de volta!',
-                  style: Theme.of(context).textTheme.titleLarge,
+                const CabecalhoMarca(simboloTamanho: 56, fonteTamanho: 28),
+                const SizedBox(height: 40),
+                RichText(
                   textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Que bom te ver de\n',
+                        style: AppTheme.frauncesRegular(
+                          fontSize: 30,
+                          color: AppColors.tinta,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'volta',
+                        style: AppTheme.frauncesItalic(
+                          fontSize: 30,
+                          color: AppColors.coral,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 10),
                 Text(
                   'Entre para continuar suas rotinas.',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.textoFraco,
                       ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 36),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -123,7 +140,23 @@ class _LoginScreenState extends State<LoginScreen> {
                               builder: (_) => const CadastroScreen(),
                             ),
                           ),
-                  child: const Text('Não tem conta? Criar conta'),
+                  child: RichText(
+                    text: TextSpan(
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textoFraco,
+                          ),
+                      children: const [
+                        TextSpan(text: 'Não tem conta?  '),
+                        TextSpan(
+                          text: 'Criar conta',
+                          style: TextStyle(
+                            color: AppColors.coral,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
               ),
