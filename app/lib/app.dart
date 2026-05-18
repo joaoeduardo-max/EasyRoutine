@@ -6,6 +6,7 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/auth_provider.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/splash_screen.dart';
+import 'features/configuracoes/configuracoes_provider.dart';
 import 'features/rotinas/rotinas_provider.dart';
 
 class EasyRoutineApp extends StatefulWidget {
@@ -48,13 +49,27 @@ class _EasyRoutineAppState extends State<EasyRoutineApp> {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => RotinasProvider()),
+        ChangeNotifierProvider(create: (_) => ConfiguracoesProvider()..carregar()),
       ],
-      child: MaterialApp(
-        title: 'EasyRoutine',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.tema,
-        navigatorKey: AppNavigator.navigatorKey,
-        home: const SplashScreen(),
+      child: Consumer<ConfiguracoesProvider>(
+        builder: (context, config, _) {
+          return MaterialApp(
+            title: 'EasyRoutine',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.tema,
+            navigatorKey: AppNavigator.navigatorKey,
+            home: const SplashScreen(),
+            builder: (context, child) {
+              final media = MediaQuery.of(context);
+              return MediaQuery(
+                data: media.copyWith(
+                  textScaler: TextScaler.linear(config.escalaFonte),
+                ),
+                child: child ?? const SizedBox.shrink(),
+              );
+            },
+          );
+        },
       ),
     );
   }

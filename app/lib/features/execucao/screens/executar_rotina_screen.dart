@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../shared/widgets/feedback.dart';
 import '../../rotinas/models/rotina.dart';
 import '../../rotinas/models/tarefa.dart';
 import 'conclusao_screen.dart';
@@ -36,9 +37,9 @@ class _ExecutarRotinaScreenState extends State<ExecutarRotinaScreen> {
   }
 
   void _pronto() {
-    HapticFeedback.selectionClick();
+    vibrar(context, TipoVibracao.selecao);
     if (_indice + 1 >= _total) {
-      HapticFeedback.mediumImpact();
+      vibrar(context, TipoVibracao.media);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
           builder: (_) => ConclusaoScreen(

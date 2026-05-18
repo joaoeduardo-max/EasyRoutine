@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/limite_leitura.dart';
 import '../../auth/auth_provider.dart';
 import '../../auth/screens/login_screen.dart';
+import '../../configuracoes/screens/configuracoes_screen.dart';
 import '../../rotinas/rotinas_provider.dart';
 
 class PerfilScreen extends StatelessWidget {
@@ -98,6 +99,16 @@ class PerfilScreen extends StatelessWidget {
                 valor: qtdRotinas.toString(),
               ),
               const SizedBox(height: 32),
+              _AcaoTile(
+                icone: Icons.tune_rounded,
+                rotulo: 'Configurações',
+                aoTocar: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ConfiguracoesScreen(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -184,6 +195,66 @@ class _Avatar extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AcaoTile extends StatelessWidget {
+  final IconData icone;
+  final String rotulo;
+  final VoidCallback aoTocar;
+
+  const _AcaoTile({
+    required this.icone,
+    required this.rotulo,
+    required this.aoTocar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.superficie,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: aoTocar,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.nevoa, width: 1.5),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.coral.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icone, color: AppColors.coral, size: 24),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  rotulo,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textoForte,
+                  ),
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textoFraco,
+                size: 26,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

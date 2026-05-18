@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/botao_grande.dart';
+import '../../../shared/widgets/feedback.dart';
 
 class ConclusaoScreen extends StatelessWidget {
   final String tituloRotina;
@@ -93,7 +94,7 @@ class ConclusaoScreen extends StatelessWidget {
                   child: BotaoGrande(
                     texto: 'Voltar',
                     aoTocar: () {
-                      HapticFeedback.lightImpact();
+                      vibrar(context, TipoVibracao.leve);
                       _voltarParaHome(context);
                     },
                   ),
