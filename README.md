@@ -1,13 +1,18 @@
 # EasyRoutine
 
-Aplicativo de rotinas visuais para pessoas autistas. Em desenvolvimento.
+Aplicativo de rotinas visuais para pessoas autistas.
 
 ## Estrutura
 
 - `backend/` — API REST (Node + Express + TypeScript + Prisma + MySQL)
 - `app/` — Aplicativo mobile (Flutter, Android)
-- `docs/` — Documentação técnica
 
-## Status
+## Produção
 
-🚧 MVP em construção. Conteúdo desta documentação será expandido conforme o projeto avança.
+- **API:** https://easyroutine-production.up.railway.app/api
+- **Health:** https://easyroutine-production.up.railway.app/api/health
+
+## Documentação
+
+Instruções para rodar a API localmente, lista completa de endpoints e exemplos
+estão em [`backend/README.md`](backend/README.md).
